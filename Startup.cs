@@ -1,6 +1,9 @@
+using eTickets.Data;
+using eTickets.Data.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +26,18 @@ namespace eTickets
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            //DbContext configuration - am definit metoda de comunicare dintre Db si clasele c#
+            //conexiunea cu baza de date prin DefaultConnectionString
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString")));
+
+            //configuram serviciile pe care le vom folosi
+            services.AddScoped<IActorsService, ActorsService>(); //instantiere pentru fiecare cerere din scopul respectiv
+                                                                 //constructor avand ca parametru interfata IActorsService si al doilea implementarea interfetei
+            services.AddScoped<IProducersService, ProducersService>();
+            services.AddScoped<ICinemasService, CinemasService>();
+            services.AddScoped<IMoviesService, MoviesService>();
+
             services.AddControllersWithViews();
         }
 
@@ -52,6 +67,10 @@ namespace eTickets
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //seed pentru Db
+            AppDbInitializer.Seed(app); // metoda Seed, cu parametru app din functia Configure(IApplicationBuilder app  IWebHostEnvironment env)
+            
         }
     }
 }

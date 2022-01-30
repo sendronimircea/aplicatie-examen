@@ -1,0 +1,57 @@
+﻿<!-- definim modelul de view pe care vrem sa il afisam -->
+
+@model IEnumerable<Actor>
+<!-- datele din actiunea index din ActorsController sunt preluate aici-->
+
+@{
+    ViewData["Title"] = "List of Actors";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+
+        <table class="table">
+            <thead>
+                <tr class="text-center">
+                    <th>@Html.DisplayNameFor(model => model.ProfilePictureURL)</th> <!--numele coloanelor, luate din proprietatea Profile Picture din modelul Actor -->
+                    <th>@Html.DisplayNameFor(model => model.FullName)</th>
+                    <th>@Html.DisplayNameFor(model => model.Bio)</th>
+                    <th>Actions</th> <!-- actiunile pe care userul le poate exercita-->
+                </tr>
+            </thead>
+            <tbody>
+                <!--   modelul este IEnumerable<Actor>, pentru fiecare rand vom avea patru coloane Profile, Fullname, Bio, Actiuni-->
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="align-middle">
+                            <img class="rounded-circle" src="@item.ProfilePictureURL" alt="@item.FullName" style="max-width: 150px" />
+                        </td>
+                        <td class="align-middle">
+                            @Html.DisplayFor(modelItem => item.FullName)
+                        </td>
+                        <td class="align-middle">
+                            @Html.DisplayFor(modelItem => item.Bio)
+                        </td>
+                        <td class="align-middle">
+
+                            <!-- actiunile posibile-->
+
+                            <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i>Edit </a> |
+                            <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i>Details </a> |
+                            <a class="btn btn-danger text-white" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash"></i>Delete </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+<!-- facem apel la partial view din Views\Shared care contine un controler de creare-->
+<!--functia are doi parametrii: primul - trimire la partial view pe care dorim sa il folosim, al doilea va fi controllerul dorit -->
+
+@await Html.PartialAsync("_CreateItem", "Actors")
